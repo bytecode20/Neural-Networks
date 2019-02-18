@@ -1,0 +1,58 @@
+import numpy as np
+from numpy import *
+class NeuralNet():
+    def __init__(self,total,input):
+      random.seed(1)
+      self.weight=2*random.rand(input,total)-1
+      #self.weight_2=2*random.rand(total,input)-1
+
+class Network():
+
+    def __init__(self,layer_1,layer_2):
+        self.layer1=layer_1
+        self.layer2=layer_2
+
+    def nonlin(self,x,der=False):
+        if(der==True):
+            return x*(1-x)
+        return 1/(1+exp(-x))
+
+    def feedforward(self,input,weight):
+        return np.dot(input,weight)
+
+    def print_weight(self):
+        print("Original weight of layer 1={0}".format(self.layer1.weight))
+        print("Original weight of layer 2={0}".format(self.layer2.weight))
+
+
+
+    def learn(self,input,output,iterations):
+
+        for i in range(iterations+1):
+
+           output_1=self.nonlin(self.feedforward(input,self.layer1.weight))
+           output_2=self.nonlin(self.feedforward(output_1,self.layer2.weight))
+           error_2=output-output_2
+           delta_2=error_2*self.nonlin(output_2,True)
+           error_1=np.dot(delta_2,self.layer2.weight.T)
+           delta_1=error_1*self.nonlin(output_1,True)
+           self.layer1.weight+=np.dot(input.T,delta_1)
+           self.layer2.weight+=np.dot(output_1.T,delta_2)
+
+
+
+
+
+
+if __name__=="__main__":
+
+    layer1=NeuralNet(4,3)
+    layer2=NeuralNet(1,4)
+    neural=Network(layer1,layer2)
+    neural.print_weight()
+    training_set_inputs = array([[0, 0, 1], [0, 1, 1], [1, 0, 1], [0, 1, 0], [1, 0, 0], [1, 1, 1], [0, 0, 0]])
+    training_set_outputs = array([[0, 1, 1, 1, 1, 0, 0]]).T
+    neural.learn(training_set_inputs,training_set_outputs,6000)
+    output_1=neural.nonlin(neural.feedforward([1,0,1],neural.layer1.weight))
+    output_2=neural.nonlin(neural.feedforward(output_1,neural.layer2.weight))
+    print("OUTPUT={0}".format(output_2))
